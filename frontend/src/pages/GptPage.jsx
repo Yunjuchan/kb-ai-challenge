@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { GptContainer } from '../style/gpt';
 import GptHeader from '../components/gpt/GptHeader';
 import GptMain from '../components/gpt/GptMain';
 import GptFooter from '../components/gpt/GptFooter';
+import DriveMode from '../components/DriveMode';
 
 const GptPage = () => {
   const [messages, setMessages] = useState([
@@ -15,15 +16,24 @@ const GptPage = () => {
     },
   ]);
 
+  const [isDriveMode, setIsDriveMode] = useState(false);
   const addMessage = (message) => {
-    setMessages([...messages, message]);
+    setMessages((prev) => [...prev, message]);
+  };
+
+  const toggleDriveMode = () => {
+    setIsDriveMode(!isDriveMode);
   };
 
   return (
     <GptContainer>
-      <GptHeader />
-      <GptMain messages={messages} />
-      <GptFooter addMessage={addMessage} />
+      <GptHeader toggleDriveMode={toggleDriveMode} />
+      {isDriveMode ? (
+        <DriveMode addMessage={addMessage} toggleDriveMode={toggleDriveMode} />
+      ) : (
+        <GptMain messages={messages} />
+      )}
+      {!isDriveMode && <GptFooter addMessage={addMessage} />}
     </GptContainer>
   );
 };
