@@ -27,7 +27,7 @@ const GptMain = ({ messages }) => {
         <img src={chatbotImage} alt="chatbot logo" className="intro-image" />
       </div>
       {messages.map((message, index) => (
-        <ChatBubble key={index} isUser={message.sender === 'user'}>
+        <ChatBubble key={index} $isUser={message.sender === 'user'}>
           {message.text}
         </ChatBubble>
       ))}

@@ -41,26 +41,24 @@ export const MainContainer = styled.div`
     .intro-image {
       width: 35%;
       height: auto;
-      /* border: 1px solid; */
     }
   }
 
-  /* 스크롤바 스타일링 */
   &::-webkit-scrollbar {
-    width: 12px; /* 스크롤바 너비 */
+    width: 12px;
   }
 
   &::-webkit-scrollbar-track {
-    background: #f3e9d2; /* 스크롤바 트랙 배경색 */
+    background: #f3e9d2;
   }
 
   &::-webkit-scrollbar-thumb {
-    background: #c8ad7f; /* 스크롤바 색상 */
-    border-radius: 6px; /* 스크롤바 모서리 둥글게 */
+    background: #c8ad7f;
+    border-radius: 6px;
   }
 
   &::-webkit-scrollbar-thumb:hover {
-    background: #b9975b; /* 스크롤바에 마우스를 올렸을 때 색상 */
+    background: #b9975b;
   }
 `;
 
@@ -74,18 +72,19 @@ export const FooterContainer = styled.div`
   padding: 0 10px;
 `;
 
-export const ChatBubble = styled.div`
-  /* background-color: ${({ isUser }) => (isUser ? '#FFFFFF' : '#FFCC00')}; */
-  background-color: ${({ isUser }) => (isUser ? '#FFCC00' : '#FFFFFF')};
-  align-self: ${({ isUser }) => (isUser ? 'flex-end' : 'flex-start')};
+export const ChatBubble = styled.div.attrs(({ $isUser }) => ({
+  'data-is-user': $isUser,
+}))`
+  background-color: ${({ $isUser }) => ($isUser ? '#FFCC00' : '#FFFFFF')};
+  align-self: ${({ $isUser }) => ($isUser ? 'flex-end' : 'flex-start')};
   color: #000;
   padding: 10px;
   border-radius: 15px;
   margin: 5px 0;
   max-width: 70%;
-  word-wrap: break-word; /* 단어가 길 경우 줄 바꿈 설정 */
-  white-space: pre-wrap; /* 공백 처리 및 자동 줄 바꿈 */
-  overflow-wrap: break-word; /* 단어가 길 경우 줄 바꿈 설정 */
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
 `;
 
 export const CategoryButtonContainer = styled.div`
