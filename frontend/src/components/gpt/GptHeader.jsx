@@ -1,11 +1,11 @@
 import React from 'react';
 import { HeaderContainer } from '../../style/gpt';
 
-const GptHeader = () => {
+const GptHeader = ({ toggleDriveMode }) => {
   return (
-    <>
-      <HeaderContainer></HeaderContainer>
-    </>
+    <HeaderContainer>
+      <button onClick={toggleDriveMode}>운전 모드</button>
+    </HeaderContainer>
   );
 };
 
