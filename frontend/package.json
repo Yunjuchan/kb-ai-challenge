@@ -19,7 +19,8 @@
     "react-speech-recognition": "^3.10.0",
     "regenerator-runtime": "^0.14.1",
     "styled-components": "^6.1.12",
-    "styled-reset": "^4.5.2"
+    "styled-reset": "^4.5.2",
+    "wavesurfer.js": "^7.8.2"
   },
   "devDependencies": {
     "@types/react": "^18.3.3",
