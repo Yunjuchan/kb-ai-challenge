@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { MainContainer, ChatBubble } from '../../style/gpt';
-import chatbotImage from '../../assets/images/chatbot.png';
+import chatbotImage from '../../assets/images/4.png';
 
 const GptMain = ({ messages }) => {
   const endOfMessagesRef = useRef(null);
