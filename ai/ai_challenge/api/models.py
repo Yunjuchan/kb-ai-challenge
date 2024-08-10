@@ -8,13 +8,22 @@
 from django.db import models
 
 
-class News(models.Model):
-    date_time = models.DateTimeField()
-    content = models.TextField(blank=True, null=True)
-    headline = models.CharField(max_length=255, blank=True, null=True)
-    category = models.CharField(max_length=255, blank=True, null=True)
-    news_id = models.BigAutoField()
+class NaverNews(models.Model):
+    news_id = models.AutoField(primary_key=True)
+    headline = models.CharField(max_length=255)
+    content = models.TextField()
+    keyword = models.CharField(max_length=255)
+    news_date = models.DateTimeField()
+    news_press = models.CharField(max_length=255)
 
-    class Meta:
-        managed = False
-        db_table = 'news'
+    def __str__(self):
+        return self.headline
+
+
+class TodayIssue(models.Model):
+    issue_id = models.AutoField(primary_key=True)
+    date = models.DateField()
+    news_id = models.ForeignKey(NaverNews, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"Issue on {self.date} - {self.news_id.headline}"
