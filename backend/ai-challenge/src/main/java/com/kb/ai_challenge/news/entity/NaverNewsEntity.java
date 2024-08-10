@@ -2,7 +2,10 @@ package com.kb.ai_challenge.news.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
@@ -10,8 +13,8 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name = "news")
-public class NewsEntity {
+@Entity(name = "naver_news")
+public class NaverNewsEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,13 +24,17 @@ public class NewsEntity {
     @Column(name="headline")
     private String headline;
 
-//    @Lob
     @Column(name="content", columnDefinition = "TEXT")
     private String content;
 
-    @Column(name="date_time")
+    @Column(name="keyword")
+    private String kewyord;
+
+    @Column(name="news_date")
     private LocalDateTime dateTime;
 
-    @Column(name="category")
-    private String category;
+    @Column(name="news_press")
+    private String news_press;
+
+
 }

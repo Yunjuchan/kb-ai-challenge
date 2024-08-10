@@ -11,9 +11,6 @@ import java.nio.file.Paths;
 public class AiChallengeApplication {
 
 	public static void main(String[] args) {
-		String driverPath = Paths.get("chromedriver-win64", "chromedriver.exe").toString();
-		System.out.println("Chrome Driver Path: " + driverPath);
 		SpringApplication.run(AiChallengeApplication.class, args);
 	}
-
 }
