@@ -3,6 +3,7 @@ import {
   FooterContainer,
   CategoryButtonContainer,
   CategoryButton,
+  InputField,
 } from '../../style/gpt';
 
 const GptFooter = ({ addMessage }) => {
@@ -31,15 +32,20 @@ const GptFooter = ({ addMessage }) => {
 
   return (
     <FooterContainer>
-      <input
+      <InputField
         type="text"
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
         onKeyPress={handleKeyPress}
-        placeholder="Type a message"
-        style={{ flex: 1, marginRight: '10px' }}
+        placeholder="메세지를 입력해주세요" // 여기에 placeholder 속성 그대로 유지
       />
-      <button onClick={handleSendMessage}>Send</button>
+
+      <button
+        onClick={handleSendMessage}
+        style={{ backgroundColor: '#ffcc00' }}
+      >
+        Send
+      </button>
       <CategoryButtonContainer>
         <CategoryButton onClick={() => handleCategoryClick('Cat 1')}>
           Cat 1
