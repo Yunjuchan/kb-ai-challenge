@@ -1,24 +1,24 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   DriveModeContainer,
-  Circle,
-  SpeechIndicator,
   StopButton,
   TranscriptBox,
+  BreathingCircle,
+  EnlargedCircle,
 } from '../style/drive';
 import SpeechRecognition, {
   useSpeechRecognition,
 } from 'react-speech-recognition';
 import { useTextToSpeech } from '../hooks/useTextToSpeech';
-import axios from 'axios';
-import Indicator from './Indicator';
+import WaveSurfer from 'wavesurfer.js';
 
 const DriveMode = ({ addMessage, toggleDriveMode }) => {
   const [isListening, setIsListening] = useState(true);
+  const [isProcessing, setIsProcessing] = useState(false);
   const { transcript, resetTranscript, listening } = useSpeechRecognition();
-
-  const { isPlaying, synthesizeSpeech } = useTextToSpeech();
-  const [idleTimeout, setIdleTimeout] = useState(null);
+  const { synthesizeSpeech } = useTextToSpeech();
+  const waveformRef = useRef(null);
+  const [waveSurfer, setWaveSurfer] = useState(null);
 
   useEffect(() => {
     if (isListening && !listening) {
@@ -34,59 +34,88 @@ const DriveMode = ({ addMessage, toggleDriveMode }) => {
     if (transcript && !listening) {
       const timer = setTimeout(() => {
         handleTranscript();
-      }, 2000);
+      }, 3000);
 
       return () => clearTimeout(timer);
     }
   }, [transcript, listening]);
 
-  const handleTranscript = async () => {
-    await addMessage({ sender: 'user', text: transcript });
+  useEffect(() => {
+    if (waveformRef.current && !waveSurfer) {
+      const ws = WaveSurfer.create({
+        container: waveformRef.current,
+        waveColor: '#ddd',
+        progressColor: '#ffcc00',
+        cursorColor: '#ffcc00',
+        barWidth: 9,
+        barHeight: 2,
+        barGap: 3,
+        height: 200,
+        responsive: true,
+        interact: true,
+        hideScrollbar: true,
+        normalize: true,
+      });
+      setWaveSurfer(ws);
+    }
+  }, [waveformRef, waveSurfer]);
 
-    const gptResponse = '지피티답변입니다';
-    setTimeout(async () => {
-      await addMessage({ sender: 'gpt', text: gptResponse });
-      synthesizeSpeech(gptResponse);
-      resetTranscript();
-      setIsListening(true);
-    }, 2);
+  const handleTranscript = async () => {
+    await setIsProcessing(true);
+
+    await addMessage({ sender: 'user', text: transcript });
+    const gptResponse =
+      '입주자대표회의는 해당 준칙을 참고해 자기 단지에 맞는 ‘공동주택 관리규약’을 정하게 된다.';
+    resetTranscript();
+
+    await addMessage({ sender: 'gpt', text: gptResponse });
+    synthesizeSpeechWithWaveSurfer(gptResponse);
   };
 
-  // GPT 응답을 가져오는 함수 (현재 주석 처리됨)
-  /*
-  const fetchGptResponse = async (userMessage) => {
-    try {
-      const response = await axios.post('/api/gpt-response', {
-        message: userMessage,
+  const synthesizeSpeechWithWaveSurfer = async (text) => {
+    console.log('isProcessing2', isProcessing);
+
+    const audioUrl = await synthesizeSpeech(text);
+    if (waveSurfer) {
+      waveSurfer.load(audioUrl);
+      waveSurfer.on('ready', () => {
+        waveSurfer.play();
       });
-      const gptResponse = response.data.text;
-      addMessage({ sender: 'gpt', text: gptResponse });
-      synthesizeSpeech(gptResponse);
-      setIsListening(true);
-      SpeechRecognition.startListening({ continuous: true });
-    } catch (error) {
-      console.error('Error fetching GPT response:', error);
+      waveSurfer.on('finish', () => {
+        waveSurfer.stop();
+        setIsProcessing(false);
+        setIsListening(true);
+      });
     }
   };
-  */
 
-  // STT 중지 및 모드 전환 처리
   const handleStopClick = () => {
-    SpeechRecognition.stopListening();
     setIsListening(false);
+    setIsProcessing(false);
+    SpeechRecognition.stopListening();
     toggleDriveMode();
   };
 
   return (
     <DriveModeContainer>
-      <Indicator />
-      {/* <Circle $isListening={isListening}>
-        {isListening ? 'Listening...' : 'Tap to Speak'}{' '}
-      </Circle>*/}
-      {/* {isListening && <SpeechIndicator />}{' '} */}
-      {/* STT가 활성화된 경우 인디케이터 표시 */}
-      <StopButton onClick={handleStopClick}>X</StopButton> {/* STT 중지 버튼 */}
-      <TranscriptBox>{transcript}</TranscriptBox> {/* 실시간 STT 텍스트 표시 */}
+      {!transcript && isListening && !isProcessing && (
+        <BreathingCircle>말하기 시작해주세요</BreathingCircle>
+      )}
+      {transcript && isListening && !isProcessing && (
+        <EnlargedCircle>내용 듣고있습니다.</EnlargedCircle>
+      )}
+      <div style={{ width: '330px' }}>
+        <div
+          ref={waveformRef}
+          id="waveform"
+          style={{
+            opacity: isProcessing ? 1 : 0,
+            transition: 'opacity 0.1s ease',
+          }}
+        ></div>
+      </div>
+      <StopButton onClick={handleStopClick}>X</StopButton>
+      <TranscriptBox>{transcript}</TranscriptBox>
     </DriveModeContainer>
   );
 };

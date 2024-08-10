@@ -70,6 +70,24 @@ export const FooterContainer = styled.div`
   display: flex;
   align-items: center;
   padding: 0 10px;
+  border: 3px solid #dddae1;
+`;
+
+export const InputField = styled.input`
+  flex: 1;
+  margin-right: 10px;
+  padding: 10px;
+  font-size: 16px;
+  background-color: #fff;
+  border: 3px solid #fff;
+  color: #000;
+
+  &::placeholder {
+    color: #adadad;
+    opacity: 1;
+    font-size: 17px;
+    font-style: italic;
+  }
 `;
 
 export const ChatBubble = styled.div.attrs(({ $isUser }) => ({
@@ -85,6 +103,10 @@ export const ChatBubble = styled.div.attrs(({ $isUser }) => ({
   word-wrap: break-word;
   white-space: pre-wrap;
   overflow-wrap: break-word;
+  box-shadow:
+    0px 3px 1px -2px rgba(0, 0, 0, 0.2),
+    0px 2px 2px 0px rgba(0, 0, 0, 0.14),
+    0px 1px 5px 0px rgba(0, 0, 0, 0.12);
 `;
 
 export const CategoryButtonContainer = styled.div`

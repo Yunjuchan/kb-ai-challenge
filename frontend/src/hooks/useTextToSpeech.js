@@ -6,7 +6,7 @@ export const useTextToSpeech = () => {
   const audioRef = useRef(null);
 
   const synthesizeSpeech = async (text) => {
-    if (!text) return;
+    if (!text) return null;
 
     const client = new PollyClient({
       region: 'us-east-1',
@@ -27,25 +27,13 @@ export const useTextToSpeech = () => {
         const webStream = AudioStream.transformToWebStream();
         const response = new Response(webStream);
         const audioBlob = await response.blob();
-        const audioUrl = URL.createObjectURL(audioBlob);
-
-        if (!audioRef.current) {
-          audioRef.current = new Audio(audioUrl);
-        } else {
-          audioRef.current.src = audioUrl;
-        }
-
-        audioRef.current.onended = () => {
-          setIsPlaying(false);
-          URL.revokeObjectURL(audioUrl);
-        };
-
-        audioRef.current.play();
-        setIsPlaying(true);
+        return URL.createObjectURL(audioBlob); // 오디오 URL 반환
       }
     } catch (err) {
       console.error('Error synthesizing speech:', err);
     }
+
+    return null;
   };
 
   return { isPlaying, synthesizeSpeech };
