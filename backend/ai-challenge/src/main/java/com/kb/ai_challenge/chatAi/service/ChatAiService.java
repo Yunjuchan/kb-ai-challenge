@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface ChatAiService {
     ChatResponseDto getResponse(List<ChatRequestDto.Message> newMessages) throws IOException;
-//    ChatResponseDto getSummary();
-    void resetSession();
+    void resetSession(boolean createReport);
+    ChatResponseDto initializeSession() throws IOException;
 }

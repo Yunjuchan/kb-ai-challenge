@@ -33,13 +33,19 @@ public class ChatAiController {
             ChatResponseDto response = chatAiService.getResponse(messages);
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (IOException e) {
-            return new ResponseEntity<>(new ChatResponseDto("Error: " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new ChatResponseDto("gpt", "Error: " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @PostMapping("/new-session")
-    public ResponseEntity<String> newChatSession() {
-        chatAiService.resetSession();
-        return new ResponseEntity<>("New chat session created.", HttpStatus.OK);
+    public ResponseEntity<ChatResponseDto> newChatSession() {
+        chatAiService.resetSession(false);
+        try {
+            ChatResponseDto response = chatAiService.initializeSession();
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (IOException e) {
+            return new ResponseEntity<>(new ChatResponseDto("gpt", "Error: " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
+
 }
