@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'real_api',
 ]
 
 MIDDLEWARE = [
@@ -73,14 +74,25 @@ WSGI_APPLICATION = 'ai_challenge.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'postgres',
+#         'USER': 'postgres.rigydxhtxsbvuwuhzfee',
+#         'PASSWORD': 'kb1234juchan',
+#         'HOST': 'aws-0-ap-northeast-2.pooler.supabase.com',
+#         'PORT': '6543',
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres.rigydxhtxsbvuwuhzfee',
-        'PASSWORD': 'kb1234juchan',
-        'HOST': 'aws-0-ap-northeast-2.pooler.supabase.com',
-        'PORT': '6543',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'ai-challenge',                # DB 이름
+        'USER': 'root',                # DB 사용자명
+        'PASSWORD': '0000',            # DB 비밀번호
+        'HOST': '127.0.0.1',            # DB 호스트
+        'PORT': '3306',                 # DB 포트
     }
 }
 
