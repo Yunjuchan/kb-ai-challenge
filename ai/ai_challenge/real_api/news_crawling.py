@@ -2,6 +2,7 @@ import sys
 import os
 
 # 현재 스크립트가 위치한 디렉토리를 Python 패스에 추가합니다.
+# 강제로 경로를 추가해줬습니다.
 script_dir = os.path.dirname(os.path.abspath(__file__))
 project_dir = os.path.dirname(script_dir)
 app_dir = os.path.join(project_dir, 'real_api')  # 애플리케이션 디렉토리 경로
@@ -13,7 +14,10 @@ import django
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ai_challenge.settings")
 django.setup()
 
+# 빨간줄로 경고가 있을 수 있습니다만, 실행됩니다.
 from real_api.models import NaverNews, TodayIssue
+from django.conf import settings
+
 
 import time
 from selenium.webdriver.common.by import By
@@ -22,7 +26,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import TimeoutException
-from datetime import datetime, timedelta
+from datetime import timedelta
 from bs4 import BeautifulSoup, NavigableString, Tag
 from selenium import webdriver
 from webdriver_manager.microsoft import EdgeChromiumDriverManager
@@ -37,11 +41,11 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.cluster import KMeans
 from sklearn.metrics import pairwise_distances_argmin_min
 
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from tqdm import tqdm
 
 from django.utils import timezone
 from datetime import datetime
-import pytz
-# from ai.ai_challenge.api.models import NaverNews, TodayIssue
 
 
 article_count = 10
@@ -67,11 +71,9 @@ def get_webdriver():
     elif os_name == "windows":
         # chromedriver_path = "C:\\Path\\To\\chromedriver.exe"  # Windows 경로
 
-        # chrome_service = Service(executable_path=ChromeDriverManager().install())
-        # driver = webdriver.Chrome(service=chrome_service)
-
-        chrome_service = Service(executable_path=EdgeChromiumDriverManager().install())
-        driver = webdriver.Edge(service=chrome_service)
+        # 문제가 있어서 여기서는 크롬이아닌, Edge를 사용.
+        edge_service = Service(executable_path=EdgeChromiumDriverManager().install())
+        driver = webdriver.Edge(service=edge_service)
         return driver
     else:
         raise Exception("Unsupported OS")
@@ -175,7 +177,7 @@ def crawling():
 
 #### 크롤링 후 처리
 # 바른AI를 사용해 형태소 분석을 진행
-# https://bareun.ai/docs
+# https://docs.bareun.ai/install/docker/
 API_KEY = "koba-NQ2RURQ-QOGEAYY-R5YGZAY-CO6TZNY"
 tagger = Tagger(API_KEY, 'localhost', 5757)
 
@@ -183,6 +185,7 @@ tagger = Tagger(API_KEY, 'localhost', 5757)
 model = SentenceTransformer('ddobokki/klue-roberta-small-nli-sts')
 
 
+# 키워드를 뽑는 로직. 코사인 유사도로 본문과 가장 연관있을것 같은 단어를 추출
 def mmr(doc_embedding, candidate_embeddings, words, top_n, diversity):
     word_doc_similarity = cosine_similarity(candidate_embeddings, doc_embedding.reshape(1, -1))
     word_similarity = cosine_similarity(candidate_embeddings)
@@ -204,7 +207,7 @@ def mmr(doc_embedding, candidate_embeddings, words, top_n, diversity):
     return top_keywords
 
 
-# 태그 뗀 text
+# 본문의 텍스트에서 테그를 떼줍니다.
 def crawling_extraction(url):
     response = requests.get(url)
     time.sleep(0.2)  # 서버에 과부하를 주지 않기 위해 잠시 대기
@@ -213,59 +216,10 @@ def crawling_extraction(url):
     article = soup.find("article")
     if article:
         article_text = article.get_text(strip=True)
-        # 기존 로직을 유지하면서 예외 처리 추가
-        img_tag = soup.select_one('#img1')
-        # img_tag가 존재하지만 data-src가 없는 경우를 대비해 예외 처리
-        if img_tag and img_tag.has_attr('data-src'):
-            img_src = img_tag['data-src']
-        else:
-            # img_tag에서 data-src를 찾지 못한 경우, 동영상 썸네일 태그 검색
-            alternative_tag = soup.select_one('#contents > div._VOD_PLAYER_WRAP')
-            if alternative_tag and alternative_tag.has_attr('data-cover-image-url'):
-                img_src = alternative_tag['data-cover-image-url']
-            else:
-                # 없으면 뭐 어쩔 수 없지만요
-                img_src = None
     else:
         article_text = "No article text found"
-        img_src = None
 
-    return article_text, img_src
-
-
-# 태그 안뗀 text
-# 본문 내용을 처리하는 함수
-def process_element(element):
-    content = ''
-    if isinstance(element, NavigableString):
-        if str(element).strip() != '':
-            content += str(element).strip() + '\n'
-    elif isinstance(element, Tag):
-        if element.name == 'strong':
-            content += f"<strong>{element.text.strip()}</strong>\n"
-        elif element.name == 'br':
-            content += '\n'
-        elif element.name == 'span' and element.get('data-type') == 'ore':
-            content += f"{element.text.strip()}\n"
-        elif element.name == 'img':
-            img_src = element.get('data-src')
-            content += f"<img src='{img_src}'>\n"
-        else:
-            for child in element.children:
-                content += process_element(child)  # 자식 요소에 대한 재귀적 처리
-    return content
-
-
-# 웹페이지에서 본문 내용 추출하기
-def extract_content_from_url(url):
-    response = requests.get(url)
-    html = response.text
-
-    soup = BeautifulSoup(html, 'html.parser')
-    article = soup.find('article', id='dic_area')
-
-    return process_element(article)
-
+    return article_text
 
 # 불용어 목록 로드
 def load_stop_words(file_path):
@@ -304,6 +258,8 @@ def kmeans_clustering(headline_list):
         tfidf_matrix = tfidf_vectorizer.fit_transform(headline_list)
 
         # KMeans 클러스터링 수행
+        # 지금은 고정적으로 5개로 주고있지만, 나중에는 더 적절한값을 추출해서
+        # 사용하는게 좋을겁니다.
         kmeans = KMeans(n_clusters=5, random_state=42)
         kmeans.fit(tfidf_matrix)
 
@@ -327,7 +283,7 @@ def parse_date(date_str):
         aware_date = timezone.make_aware(naive_date, timezone.get_current_timezone())
         return aware_date
     except ValueError:
-        # 위기상황 발생!
+        # 위기상황 발생! 발생! 발생!
         print("Date format error")
         return None
 
@@ -335,86 +291,55 @@ def parse_date(date_str):
 def method():
     article_list = crawling()
 
-    stop_word = load_stop_words("./stop_words.txt")
+    file_path = os.path.join(settings.BASE_DIR, 'real_api', 'stop_words.txt')
+    stop_word = load_stop_words(file_path)
 
-    headline_arr = []
-
-    for article in article_list:
+    def process_article(article, stop_word):
         try:
-            content = extract_content_from_url(article['article_link'])
+            content = crawling_extraction(article['article_link'])
         except requests.exceptions.RequestException as e:
-            print("1-error")
             print(f"Failed to retrieve article content from {article['article_link']}: {e}")
-            continue
+            return None
 
-        # keyword_ext(content, stop_word)
-
+        keyword = keyword_ext(content, stop_word)
         news_date = parse_date(article['date_time'])
 
-        # NaverNews에 데이터 추가 (중복 방지)
         news, created = NaverNews.objects.get_or_create(
             news_id=article['article_link'],
             defaults={
                 'headline': article['article_title'],
                 'content': content,
-                'keyword': "example_keyword",
+                'keyword': keyword,
                 'news_date': news_date,
                 'news_press': article['press'],
             }
         )
 
-        if created:
-            headline_arr.append(article['article_title'])
+        return (article['article_title'], article['date_time'], article['article_link']) if created else None
 
+    # ThreadPoolExecutor와 tqdm을 사용한 병렬 처리
+    headline_arr = []
+    # TODO 중요! 자주 튕기거나 멈추면, max_workers를 낮춰보세요. 반대로 높이면 빨라지긴합니다.
+    # Intel OpenMP와 LLVM OpenMP가 동시에 로드되어 데드락 문제가 발생할 수 있습니다.
+    # 문제없긴한데, 문제가 생기면 개발자에게 연락하세요...
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        futures = [executor.submit(process_article, article, stop_word) for article in article_list]
+
+        for future in tqdm(as_completed(futures), total=len(futures), desc="Processing articles"):
+            result = future.result()
+            if result:
+                headline_arr.append(result[0])
+
+    # KMeans 클러스터링
     issue_arr = kmeans_clustering(headline_arr)
 
+    # TodayIssue에 데이터 추가
     for index in issue_arr:
         today = TodayIssue.objects.create(
             date=parse_date(article_list[index]['date_time']),
             news_url=article_list[index]['article_link']
         )
 
-# 수동 크롤링
+# # 수동 크롤링
 # if __name__ == '__main__':
-#     article_list = crawling()
-#
-#     stop_word = load_stop_words("./stop_words.txt")
-#
-#     headline_arr = []
-#
-#     for article in article_list:
-#         try:
-#             content = extract_content_from_url(article['article_link'])
-#         except requests.exceptions.RequestException as e:
-#             print("1-error")
-#             print(f"Failed to retrieve article content from {article['article_link']}: {e}")
-#             continue
-#
-#         # keyword_ext(content, stop_word)
-#
-#         news_date = parse_date(article['date_time'])
-#
-#         # NaverNews에 데이터 추가 (중복 방지)
-#         news, created = NaverNews.objects.get_or_create(
-#             news_id=article['article_link'],
-#             defaults={
-#                 'headline': article['article_title'],
-#                 'content': content,
-#                 'keyword': "example_keyword",
-#                 'news_date': news_date,
-#                 'news_press': article['press'],
-#             }
-#         )
-#
-#         if created:
-#             headline_arr.append(article['article_title'])
-#
-#     issue_arr = kmeans_clustering(headline_arr)
-#
-#     for index in issue_arr:
-#         today = TodayIssue.objects.create(
-#             date=parse_date(article_list[index]['date_time']),
-#             news_url=article_list[index]['article_link']
-#         )
-
-
+#     method()
