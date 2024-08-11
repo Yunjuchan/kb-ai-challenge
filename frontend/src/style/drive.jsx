@@ -45,7 +45,7 @@ export const EnlargedCircle = styled.div`
 
 export const DriveModeContainer = styled.div`
   width: 100%;
-  height: 84vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
