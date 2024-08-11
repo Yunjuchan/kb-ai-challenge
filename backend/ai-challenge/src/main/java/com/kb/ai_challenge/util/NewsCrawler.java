@@ -105,9 +105,9 @@ public class NewsCrawler {
         }
     }
 
-    public static void main(String[] args) {
-        ApplicationContext context = SpringApplication.run(AiChallengeApplication.class, args);
-        NewsCrawler crawler = context.getBean(NewsCrawler.class);
-        crawler.fetchNewsData();
-    }
+//    public static void main(String[] args) {
+//        ApplicationContext context = SpringApplication.run(AiChallengeApplication.class, args);
+//        NewsCrawler crawler = context.getBean(NewsCrawler.class);
+//        crawler.fetchNewsData();
+//    }
 }

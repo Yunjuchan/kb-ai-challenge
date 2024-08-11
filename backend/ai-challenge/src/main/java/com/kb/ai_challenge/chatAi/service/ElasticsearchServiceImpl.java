@@ -16,11 +16,11 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
         rangeObject.addProperty("lte", toDateTime);
 
         JsonObject range = new JsonObject();
-        range.add("date_time", rangeObject);
+        range.add("news_date", rangeObject);
 
         JsonObject multiMatch = new JsonObject();
         multiMatch.addProperty("query", query);
-        multiMatch.add("fields", GsonUtil.toJsonArray(List.of("headline", "content")));
+        multiMatch.add("fields", GsonUtil.toJsonArray(List.of("headline", "content", "keyword", "news_press")));
         multiMatch.addProperty("fuzziness", "AUTO");
 
         JsonObject multiMatchQuery = new JsonObject();

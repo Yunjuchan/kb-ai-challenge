@@ -12,7 +12,7 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
+@Entity(name = "today_issue")
 public class TodayIssue {
 
     @Id
@@ -21,7 +21,7 @@ public class TodayIssue {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "news_id", referencedColumnName = "news_id", foreignKey = @ForeignKey(name = "fk_today_issue_news_id"))
+    @JoinColumn(name = "news_url", referencedColumnName = "news_id", foreignKey = @ForeignKey(name = "fk_today_issue_news_url"))
     private NaverNewsEntity naverNewsEntity;
 
     @Column(name="date")

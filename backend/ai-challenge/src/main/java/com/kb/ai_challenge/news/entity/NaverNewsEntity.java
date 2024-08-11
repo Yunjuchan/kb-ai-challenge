@@ -17,9 +17,8 @@ import java.time.LocalDateTime;
 public class NaverNewsEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="news_id")
-    private Long id;
+    private String newsId;
 
     @Column(name="headline")
     private String headline;
@@ -28,13 +27,13 @@ public class NaverNewsEntity {
     private String content;
 
     @Column(name="keyword")
-    private String kewyord;
+    private String keyword;
 
     @Column(name="news_date")
-    private LocalDateTime dateTime;
+    private LocalDateTime newsDate;
 
     @Column(name="news_press")
-    private String news_press;
+    private String newsPress;
 
 
 }

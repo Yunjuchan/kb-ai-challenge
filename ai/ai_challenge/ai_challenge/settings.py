@@ -88,9 +88,9 @@ WSGI_APPLICATION = 'ai_challenge.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'kb',                # DB 이름
-        'USER': 'ssafy',                # DB 사용자명
-        'PASSWORD': 'ssafy',            # DB 비밀번호
+        'NAME': 'ai-challenge',                # DB 이름
+        'USER': 'root',                # DB 사용자명
+        'PASSWORD': '0000',            # DB 비밀번호
         'HOST': '127.0.0.1',            # DB 호스트
         'PORT': '3306',                 # DB 포트
     }
