@@ -1,6 +1,8 @@
 ### venv ###
 # Virtualenv
 # http://iamzed.com/2009/05/07/a-primer-on-virtualenv/
+__pycache__/
+.idea/
 .Python
 [Bb]in
 [Ii]nclude
@@ -10,4 +12,5 @@
 [Ss]cripts
 pyvenv.cfg
 .venv
+.venv/
 pip-selfcheck.json
