@@ -10,7 +10,10 @@ export const useTextToSpeech = () => {
 
     const client = new PollyClient({
       region: 'us-east-1',
-      credentials: {},
+      credentials: {
+        accessKeyId: 'ACCESS-KEY-ID',
+        secretAccessKey: 'SECRET-ACCESS-KEY',
+      },
     });
 
     const params = {

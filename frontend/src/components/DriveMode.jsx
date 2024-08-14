@@ -11,6 +11,7 @@ import SpeechRecognition, {
 } from 'react-speech-recognition';
 import { useTextToSpeech } from '../hooks/useTextToSpeech';
 import WaveSurfer from 'wavesurfer.js';
+import axios from 'axios';
 
 const DriveMode = ({ addMessage, toggleDriveMode }) => {
   const [isListening, setIsListening] = useState(true);
@@ -61,20 +62,34 @@ const DriveMode = ({ addMessage, toggleDriveMode }) => {
   }, [waveformRef, waveSurfer]);
 
   const handleTranscript = async () => {
-    await setIsProcessing(true);
+    setIsProcessing(true);
 
-    await addMessage({ sender: 'user', text: transcript });
-    const gptResponse =
-      '입주자대표회의는 해당 준칙을 참고해 자기 단지에 맞는 ‘공동주택 관리규약’을 정하게 된다.';
+    // 사용자 음성 입력을 메시지로 추가
+    addMessage({ sender: 'user', text: transcript });
+
+    try {
+      // GPT API 호출
+      const response = await axios.post('http://localhost:8080/api/chat', {
+        prompt: transcript,
+      });
+
+      const gptResponse = response.data.text;
+
+      // GPT의 응답을 메시지로 추가
+      addMessage({ sender: 'gpt', text: gptResponse });
+      
+      // GPT의 응답을 음성으로 재생
+      synthesizeSpeechWithWaveSurfer(gptResponse);
+
+    } catch (error) {
+      console.error('Error processing transcript:', error);
+    }
+
+    // 음성 입력 리셋
     resetTranscript();
-
-    await addMessage({ sender: 'gpt', text: gptResponse });
-    synthesizeSpeechWithWaveSurfer(gptResponse);
   };
 
   const synthesizeSpeechWithWaveSurfer = async (text) => {
-    console.log('isProcessing2', isProcessing);
-
     const audioUrl = await synthesizeSpeech(text);
     if (waveSurfer) {
       waveSurfer.load(audioUrl);

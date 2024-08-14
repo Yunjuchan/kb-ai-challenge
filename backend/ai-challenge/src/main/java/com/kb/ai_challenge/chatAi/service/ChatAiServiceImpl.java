@@ -79,7 +79,7 @@ public class ChatAiServiceImpl implements ChatAiService {
                 + "Q1. 궁금해할만한 질문1\n"
                 + "Q2. 궁금해할만한 질문2\n"
                 + "Q3. 궁금해할만한 질문3\n";
-        logger.info(augmentedPrompt);
+//        logger.info(augmentedPrompt);
 
 
         // ChatGPT API로 메시지 전송
