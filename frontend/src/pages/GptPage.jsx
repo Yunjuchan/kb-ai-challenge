@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import axios from 'axios';
+
 import { GptContainer } from '../style/gpt';
 import GptHeader from '../components/gpt/GptHeader';
 import GptMain from '../components/gpt/GptMain';
@@ -7,14 +9,9 @@ import DriveMode from '../components/DriveMode';
 
 const GptPage = () => {
   const [messages, setMessages] = useState([
-    { sender: 'user', text: 'Hello!' },
-    { sender: 'gpt', text: 'Hi! How can I help you today?' },
-    { sender: 'user', text: 'I would like to know about the weather.' },
-    {
-      sender: 'gpt',
-      text: 'Sure, the weather today is sunny with a chance of rain in the afternoon.',
-    },
+  
   ]);
+  const [sessionStarted, setSessionStarted] = useState(false);
 
   const [isDriveMode, setIsDriveMode] = useState(false);
   const addMessage = (message) => {
@@ -24,7 +21,23 @@ const GptPage = () => {
   const toggleDriveMode = () => {
     setIsDriveMode(!isDriveMode);
   };
-
+  
+  useEffect(() => {
+    if (!sessionStarted) {
+      axios
+        .post('http://localhost:8080/api/chat/new-session')
+        .then((response) => {
+          setMessages((prev) => [
+            ...prev,
+            { sender: 'gpt', text: response.data.text },
+          ]);
+          setSessionStarted(true); // 세션 시작 플래그를 설정
+        })
+        .catch((error) => {
+          console.error('Error starting session:', error);
+        });
+    }
+  }, [sessionStarted]);
   return (
     <GptContainer>
       <GptHeader toggleDriveMode={toggleDriveMode} />

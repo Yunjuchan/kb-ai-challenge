@@ -23,6 +23,7 @@ public class ChatAiController {
         this.chatAiService = chatAiService;
     }
 
+    @CrossOrigin(origins = "http://localhost:5173")
     @PostMapping(consumes = "application/json", produces = "application/json")
     public ResponseEntity<ChatResponseDto> askChatAi(@RequestBody ChatPromptDto chatPromptDto) {
         try {
@@ -37,6 +38,7 @@ public class ChatAiController {
         }
     }
 
+    @CrossOrigin(origins = "http://localhost:5173")
     @PostMapping("/new-session")
     public ResponseEntity<ChatResponseDto> newChatSession() {
         chatAiService.resetSession(false);

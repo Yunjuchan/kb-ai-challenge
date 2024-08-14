@@ -5,18 +5,30 @@ import {
   CategoryButton,
   InputField,
 } from '../../style/gpt';
+import axios from 'axios';
 
 const GptFooter = ({ addMessage }) => {
   const [inputValue, setInputValue] = useState('');
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (inputValue.trim()) {
-      addMessage({ sender: 'user', text: inputValue });
+      const userMessage = { sender: 'user', text: inputValue };
+      addMessage(userMessage);
       setInputValue('');
-      // API 호출하여 GPT 응답 받기 (예시)
-      // addMessage({ sender: 'gpt', text: 'GPT 응답 메시지' });
+  
+      try {
+        const response = await axios.post('http://localhost:8080/api/chat', {
+          prompt: inputValue,
+        });
+  
+        const gptMessage = { sender: 'gpt', text: response.data.text };
+        addMessage(gptMessage);
+      } catch (error) {
+        console.error('Error sending message:', error);
+      }
     }
   };
+  
 
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
@@ -26,8 +38,7 @@ const GptFooter = ({ addMessage }) => {
 
   const handleCategoryClick = (category) => {
     addMessage({ sender: 'user', text: category });
-    // 여기에서 필요하다면 API 호출하여 GPT 응답 받기 (예시)
-    // addMessage({ sender: 'gpt', text: 'GPT 응답 메시지' });
+    // 필요하다면 카테고리 클릭 시 API 호출하여 응답 받기
   };
 
   return (
@@ -37,7 +48,7 @@ const GptFooter = ({ addMessage }) => {
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
         onKeyPress={handleKeyPress}
-        placeholder="메세지를 입력해주세요" // 여기에 placeholder 속성 그대로 유지
+        placeholder="메세지를 입력해주세요"
       />
 
       <button
@@ -46,7 +57,7 @@ const GptFooter = ({ addMessage }) => {
       >
         Send
       </button>
-      <CategoryButtonContainer>
+      {/* <CategoryButtonContainer>
         <CategoryButton onClick={() => handleCategoryClick('Cat 1')}>
           Cat 1
         </CategoryButton>
@@ -56,7 +67,7 @@ const GptFooter = ({ addMessage }) => {
         <CategoryButton onClick={() => handleCategoryClick('Cat 3')}>
           Cat 3
         </CategoryButton>
-      </CategoryButtonContainer>
+      </CategoryButtonContainer> */}
     </FooterContainer>
   );
 };

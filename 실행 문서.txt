@@ -1,0 +1,46 @@
+windows 로컬 환경에서 실행
+
+[바른 ai 형태소 분석기]
+windows 실행시 wsl를 설치하여 리눅스 환경이 가능하게 설정해야합니다.
+powershell에서 코드 실행
+> docker pull bareunai/bareun:latest
+> docker run `
+    -d `
+    --restart unless-stopped `
+    --name bareun `
+    -p 5757:5757 `
+    -p 9902:9902 `
+    -v ~/bareun/var:/bareun/var `
+    bareunai/bareun:latest
+> docker exec bareun /bareun/bin/bareun -reg YOUR-API-KEY
+
+이후 도커에 생성된 바른 ai 이미지를 실행합니다.
+
+[mysql]
+ai-challenge 데이터베이스 생성
+Dump20240811폴더 import
+
+[Front-end]
+> npm i
+> npm install
+
+
+[django]
+python 버전 3.11 이상
+> python -m venv venv
+> source venv/Scripts/activate 
+> pip install -r requirents.txt
+> python manage.py makemigrations
+> python manage.py migrate
+> python manage.py runserver
+
+[springboot]
+인텔리제이에서 AiChallengeApplication.java 실행
+
+[elasticsearch]
+{다운로드받은 경로}\elk\elasticsearch-8.15.0-windows-x86_64\elasticsearch-8.15.0\bin 내의 elasticsearch.bat 실행
+
+[logstash] elasticsearch로 이관 작업
+{다운로드받은 경로}\elk\logstash-8.15.0-windows-x86_64\logstash-8.15.0\bin
+에서 터미널 실행
+>  .\logstash.bat -f config\logstash_naver_news.conf

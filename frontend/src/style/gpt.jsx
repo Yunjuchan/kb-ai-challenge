@@ -99,7 +99,8 @@ export const ChatBubble = styled.div.attrs(({ $isUser }) => ({
   padding: 10px;
   border-radius: 15px;
   margin: 5px 0;
-  max-width: 70%;
+  max-width: 77%;
+  padding: 14PX 17PX;
   word-wrap: break-word;
   white-space: pre-wrap;
   overflow-wrap: break-word;
@@ -107,6 +108,11 @@ export const ChatBubble = styled.div.attrs(({ $isUser }) => ({
     0px 3px 1px -2px rgba(0, 0, 0, 0.2),
     0px 2px 2px 0px rgba(0, 0, 0, 0.14),
     0px 1px 5px 0px rgba(0, 0, 0, 0.12);
+
+    font-family: 'Malgun Gothic', 'Nanum Gothic', sans-serif; /* 글꼴 설정 */
+  letter-spacing: 0.5px; /* 글자 간격 설정 */
+  line-height: 1.5; /* 줄 간격 설정 */
+  font-weight: 550;
 `;
 
 export const CategoryButtonContainer = styled.div`

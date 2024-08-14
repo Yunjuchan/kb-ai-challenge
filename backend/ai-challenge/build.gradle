@@ -33,7 +33,7 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-
+//	implementation 'org.springframework.boot:spring-boot-starter-security'
 	// Elasticsearch 클라이언트 의존성 추가
 	implementation 'co.elastic.clients:elasticsearch-java:8.15.0'
 	implementation 'org.elasticsearch.client:elasticsearch-rest-client:8.15.0'
