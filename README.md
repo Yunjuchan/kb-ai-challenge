@@ -46,16 +46,17 @@
 정보의 부족은 경제적 불평등을 심화시키지만, 인공지능 기술을 통해 그 격차를 줄일 수 있습니다.
 
 출퇴근길, 단순한 이동 시간이 아닌, 당신의 금융 지식을 확장하는 소중한 시간으로 바꿔드리겠습니다.
-<br>
+<br><br>
 
 
 ## **서비스 화면**
 
-<div style="display: grid; grid-template-columns: 1fr auto 1fr; height: 100vh; align-items: center;">
-  <img src="assets/image-2.png" style="max-width: 100%; max-height: 100%; object-fit: contain;">
-  <div style="width: 10px;"></div> <!-- 가운데 간격 -->
-  <img src="assets/image-3.png" style="max-width: 100%; max-height: 100%; object-fit: contain;">
-</div>
+<img src="assets/image-2.png" width="33%"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <img src="assets/image-3.png" width="33%">
+
+
+
+
+
 
 
 <br>
